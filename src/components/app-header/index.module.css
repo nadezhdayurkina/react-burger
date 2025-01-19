@@ -1,0 +1,7 @@
+.appHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color:#1C1C21;
+    height: 88px;
+}

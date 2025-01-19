@@ -1,35 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import "./App.css";
+import styles from "./App.module.css";
+import { AppHeader } from "./components/app-header";
+// подгружаем common.css из библиотеки ЯП - эти стили применяются к root, header и т.д.
+// например, библиотека делает весь фон черным и меняет скроллы
+import "@ya.praktikum/react-developer-burger-ui-components";
+import { LeftRight } from "./components/left-right";
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className={styles.app}>
+      <AppHeader />
+      <LeftRight className={styles.leftRight} />
+    </div>
+  );
 }
 
-export default App
+export default App;

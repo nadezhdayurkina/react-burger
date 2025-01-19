@@ -1,0 +1,13 @@
+.cardIngridient{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 272px;
+    height: 208px;
+}
+
+.price{
+    display: flex;
+    align-items: center;
+}
