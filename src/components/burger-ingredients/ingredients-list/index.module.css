@@ -1,3 +1,8 @@
+.ingredientsList {
+    height: 100%;
+    overflow: auto;
+}
+
 .table {
     display: flex;
     flex-direction: row;

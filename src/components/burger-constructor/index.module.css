@@ -1,7 +1,15 @@
 .burgerConstructor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 20px;
     height: 100%;
     width: 100%;
     overflow: auto;
+}
+
+.dragIcon {
+    padding-right: 20px;
 }
 
 .rows {
@@ -9,6 +17,8 @@
     flex-direction: column;
     height: 100%;
     overflow: auto;
+    gap: 10px;
+    scroll-snap-type: y mandatory;
 }
 
 .rowTopBottom{
@@ -19,6 +29,7 @@
     display: flex ;
     align-items: center;
     justify-content: space-around;
+    scroll-snap-align: end;
 }
 
 .bottom{
@@ -31,7 +42,12 @@
     padding-bottom: 10px;
 }
 
+.totalPrice{
+    padding-right: 10px;
+}
+
 .currencyIcon {
     height: 33px;
     width: 33px;
+    padding-right: 35px;
 }

@@ -6,156 +6,81 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from "./index.module.css";
 import clsx from "clsx";
+import { Ingredient } from "../burger-ingredients/ingredients-list";
+import { Modal } from "../modal";
+import { useState } from "react";
+import { OrderDetails } from "../order-details";
 
-export function BurgerConstructor() {
-  let img = "https://code.s3.yandex.net/react/code/meat-04.png";
+export function BurgerConstructor(props: {
+  focusedBun: Ingredient | null;
+  focusedIngredients: Ingredient[] | null;
+}) {
+  let [showModal, setShowModal] = useState(false);
+
   return (
     <>
-      <div
-        className={styles.burgerConstructor}
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "10px",
-          paddingLeft: "20px",
-        }}
-      >
-        <div className={styles.rowTopBottom}>
-          <ConstructorElement
-            type="top"
-            isLocked={true}
-            text="Краторная булка N-200i (верх)"
-            price={200}
-            thumbnail={img}
-          />
-        </div>
-        <div className={styles.rows}>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
+      <div className={styles.burgerConstructor}>
+        {props.focusedBun && (
+          <div className={styles.rowTopBottom}>
             <ConstructorElement
-              text="Соус традиционный галактический"
-              price={30}
-              thumbnail={img}
+              type="top"
+              isLocked={true}
+              text={props.focusedBun.name}
+              price={props.focusedBun.price}
+              thumbnail={props.focusedBun.image}
             />
           </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Мясо бессмертных моллюсков Protostomia"
-              price={300}
-              thumbnail={img}
-            />
-          </div>
+        )}
 
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Плоды Фалленианского дерева"
-              price={80}
-              thumbnail={img}
-            />
+        {props.focusedIngredients && (
+          <div className={styles.rows}>
+            {props.focusedIngredients.map((item) => (
+              <div key={item._id} className={styles.rowContent}>
+                <div className={styles.dragIcon}>
+                  <DragIcon type="primary" />
+                </div>
+                <ConstructorElement
+                  text={item.name}
+                  price={item.price}
+                  thumbnail={item.image}
+                />
+              </div>
+            ))}
           </div>
+        )}
 
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
+        {props.focusedBun && (
+          <div className={styles.rowTopBottom}>
             <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
+              type="bottom"
+              isLocked={true}
+              text={props.focusedBun.name}
+              price={props.focusedBun.price}
+              thumbnail={props.focusedBun.image}
             />
           </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
-            />
-          </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
-            />
-          </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
-            />
-          </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
-            />
-          </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
-            />
-          </div>
-          <div className={styles.rowContent}>
-            <div style={{ paddingRight: "20px" }}>
-              <DragIcon type="primary" />
-            </div>
-            <ConstructorElement
-              text="Хрустящие минеральные кольца"
-              price={80}
-              thumbnail={img}
-            />
-          </div>
-        </div>
-        <div className={styles.rowTopBottom}>
-          <ConstructorElement
-            type="bottom"
-            isLocked={true}
-            text="Краторная булка N-200i (низ)"
-            price={200}
-            thumbnail={img}
-          />
-        </div>
+        )}
         <div>
           <div className={styles.bottom}>
-            <div
-              style={{ paddingRight: "10px" }}
-              className="text_type_digits-medium"
-            >
+            <div className={clsx(styles.totalPrice, "text_type_digits-medium")}>
               610
             </div>
-            <div style={{ paddingRight: "35px" }}>
+            <div>
               <CurrencyIcon type="primary" className={styles.currencyIcon} />
             </div>
-            <Button htmlType="button" type="primary" size="medium">
+            <Button
+              htmlType="button"
+              type="primary"
+              size="medium"
+              onClick={() => setShowModal(true)}
+            >
               Оформить заказ
             </Button>
+            {showModal && (
+              <Modal onClose={() => setShowModal(false)}>
+                <OrderDetails />
+              </Modal>
+            )}
           </div>
         </div>
       </div>

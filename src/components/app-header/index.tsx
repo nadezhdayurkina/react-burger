@@ -4,20 +4,20 @@ import { Logo } from "@ya.praktikum/react-developer-burger-ui-components";
 
 export function AppHeader() {
   return (
-    <div className={styles.appHeader}>
-      <div style={{ marginRight: "8px" }}>
+    <header className={styles.appHeader}>
+      <nav className={styles.constructorIngredients}>
         <NavigationLink text="Конструктор" active={true} icon="burger" />
-      </div>
+      </nav>
 
-      <div style={{ marginRight: "70px" }}>
+      <nav className={styles.feed}>
         <NavigationLink text="Лента заказов" active={false} icon="list" />
-      </div>
+      </nav>
 
-      <div style={{ marginRight: "270px" }}>
+      <div className={styles.logo}>
         <Logo />
       </div>
 
       <NavigationLink text="Личный кабинет" active={false} icon="profile" />
-    </div>
+    </header>
   );
 }
