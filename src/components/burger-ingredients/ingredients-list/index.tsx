@@ -25,8 +25,8 @@ export function IngredientsList(props: {
   ingredients?: Ingredient[];
   onIngredientClick?: (ingredient: Ingredient) => void;
 }) {
-  let [showModal, setShowModal] = useState(false);
-  let [currentIngredient, setCurrentIngredient] = useState<Ingredient>();
+  const [showModal, setShowModal] = useState(false);
+  const [currentIngredient, setCurrentIngredient] = useState<Ingredient>();
   if (!props.ingredients?.length) return <p>Нет данных.</p>;
 
   return (

@@ -9,7 +9,7 @@ export function CardIngredient(props: {
 }) {
   return (
     <div className={styles.cardIngredient}>
-      <img src={props.image} alt="Иллюстрация ингридиента."></img>
+      <img src={props.image} alt={props.name}></img>
       <div className={clsx(styles.price, "text_type_digits-default")}>
         {props.price}
         <CurrencyIcon type="primary" className="m-1" />

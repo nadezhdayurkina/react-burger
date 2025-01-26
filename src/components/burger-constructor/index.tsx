@@ -15,7 +15,7 @@ export function BurgerConstructor(props: {
   focusedBun: Ingredient | null;
   focusedIngredients: Ingredient[] | null;
 }) {
-  let [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   return (
     <>

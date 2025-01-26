@@ -7,7 +7,10 @@ export function IngredientDetails(props: { currentIngredient?: Ingredient }) {
     <div className={styles.modal}>
       <div className="text_type_main-large">Детали ингридиента</div>
       <div>
-        <img src={props.currentIngredient?.image_large} />
+        <img
+          src={props.currentIngredient?.image_large}
+          alt={props.currentIngredient?.name}
+        />
       </div>
       <div className="text_type_main-medium">
         {props.currentIngredient?.name}

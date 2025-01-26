@@ -7,7 +7,7 @@ export function OrderDetails() {
     <div className={styles.modal}>
       <div className="text text_type_digits-large">123345</div>
       <div className="text text_type_main-medium">идентификатор заказа</div>
-      <img src={donePng}></img>
+      <img src={donePng} alt="галочка"></img>
       <div className="text text_type_main-small">Ваш заказ начали готовить</div>
       <div className={clsx("text_type_main-small", "text_color_inactive")}>
         Дождитесь готовности на орбитальной станции
