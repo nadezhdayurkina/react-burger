@@ -1,0 +1,53 @@
+.burgerConstructor {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-left: 20px;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.dragIcon {
+    padding-right: 20px;
+}
+
+.rows {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: auto;
+    gap: 10px;
+    scroll-snap-type: y mandatory;
+}
+
+.rowTopBottom{
+    padding-left: 46px;
+}
+
+.rowContent{
+    display: flex ;
+    align-items: center;
+    justify-content: space-around;
+    scroll-snap-align: end;
+}
+
+.bottom{
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: nowrap;
+    padding-right: 30px;
+    padding-bottom: 10px;
+}
+
+.totalPrice{
+    padding-right: 10px;
+}
+
+.currencyIcon {
+    height: 33px;
+    width: 33px;
+    padding-right: 35px;
+}

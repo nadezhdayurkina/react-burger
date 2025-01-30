@@ -1,0 +1,16 @@
+.ingredientsList {
+    height: 100%;
+    overflow: auto;
+}
+
+.table {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.card {
+    position: relative
+}

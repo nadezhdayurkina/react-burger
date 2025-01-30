@@ -1,0 +1,12 @@
+.burgerIngredients {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+   }
+
+.title {
+    margin-top: 40px;
+    margin-bottom: 20px;
+}
