@@ -1,27 +1,34 @@
 import styles from "./index.module.css";
-import { type Ingredient } from "../burger-ingredients/ingredients-list";
 import { Info } from "./info";
+import { useIngredientsStore } from "../../store";
 
-export function IngredientDetails(props: { currentIngredient?: Ingredient }) {
+export function IngredientDetails() {
+  const ingredientsStore = useIngredientsStore();
   return (
     <div className={styles.modal}>
       <div className="text_type_main-large">Детали ингридиента</div>
       <div>
         <img
-          src={props.currentIngredient?.image_large}
-          alt={props.currentIngredient?.name}
+          src={ingredientsStore.currentIngredient?.image_large}
+          alt={ingredientsStore.currentIngredient?.name}
         />
       </div>
       <div className="text_type_main-medium">
-        {props.currentIngredient?.name}
+        {ingredientsStore.currentIngredient?.name}
       </div>
       <div className={styles.info}>
-        <Info lable="Калории, ккал" value={props.currentIngredient?.calories} />
-        <Info lable="Белки, г" value={props.currentIngredient?.proteins} />
-        <Info lable="Жиры, г" value={props.currentIngredient?.fat} />
+        <Info
+          lable="Калории, ккал"
+          value={ingredientsStore.currentIngredient?.calories}
+        />
+        <Info
+          lable="Белки, г"
+          value={ingredientsStore.currentIngredient?.proteins}
+        />
+        <Info lable="Жиры, г" value={ingredientsStore.currentIngredient?.fat} />
         <Info
           lable="Углеводы, г"
-          value={props.currentIngredient?.carbohydrates}
+          value={ingredientsStore.currentIngredient?.carbohydrates}
         />
       </div>
     </div>

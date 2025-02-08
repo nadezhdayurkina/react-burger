@@ -5,45 +5,31 @@ import styles from "./App.module.css";
 import "@ya.praktikum/react-developer-burger-ui-components";
 import { AppHeader } from "./components/app-header";
 import { LeftRight } from "./components/left-right";
-import axios from "axios";
-import { useEffect, useState } from "react";
-import { Ingredient } from "./components/burger-ingredients/ingredients-list";
+import { useEffect } from "react";
+import { useIngredientsStore } from "./store";
 
 function App() {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
-  const [error, setError] = useState<boolean>(false);
+  const ingredientsStore = useIngredientsStore();
 
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get("https://norma.nomoreparties.space/api/ingredients")
-      .then((resp) => {
-        setIngredients(resp.data.data);
-      })
-      .catch(() => {
-        setError(true);
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    ingredientsStore.fetchIngredients();
   }, []);
 
   return (
     <div className={styles.app}>
       <AppHeader />
-      {loading && (
+      {ingredientsStore.status == "loading" && (
         <div className="text_type_main-medium text_color_inactive">
           Данные загружаются...
         </div>
       )}
-      {error && (
+      {ingredientsStore.status == "failed" && (
         <div className="text_type_main-medium text_color_inactive">
           Ошибка! Что-то пошло не так.
         </div>
       )}
-      {!!ingredients?.length && (
-        <LeftRight className={styles.leftRight} ingredients={ingredients} />
+      {!!ingredientsStore.ingredients?.length && (
+        <LeftRight className={styles.leftRight} />
       )}
     </div>
   );

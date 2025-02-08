@@ -6,6 +6,8 @@
     height: 100%;
     width: 100%;
     overflow: auto;
+    padding-top: 60px;
+    box-sizing: border-box;
 }
 
 .dragIcon {
@@ -15,14 +17,13 @@
 .rows {
     display: flex;
     flex-direction: column;
-    height: 100%;
     overflow: auto;
     gap: 10px;
     scroll-snap-type: y mandatory;
 }
 
 .rowTopBottom{
-    padding-left: 46px;
+    padding-left: 62px;
 }
 
 .rowContent{
@@ -50,4 +51,12 @@
     height: 33px;
     width: 33px;
     padding-right: 35px;
+}
+
+.loader{
+    width: 500px;
+    height: 400px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
