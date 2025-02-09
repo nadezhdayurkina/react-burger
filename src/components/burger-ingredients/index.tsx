@@ -10,6 +10,7 @@ import { CardIngredient } from "./card-ingredient";
 import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import { IngredientItem } from "../../slices/ingredients";
 import { useDrag } from "react-dnd";
+import { v4 as uuid4 } from "uuid";
 
 function IngredientsTable(props: { item: IngredientItem }) {
   const ingredientsStore = useIngredientsStore();
@@ -35,8 +36,11 @@ function IngredientsTable(props: { item: IngredientItem }) {
       className={styles.card}
       key={props.item._id}
       onContextMenu={(e) => {
-        if (props.item.type == "bun") ingredientsStore.setBun(props.item);
-        else ingredientsStore.addFilling(props.item);
+        if (props.item.type == "bun") {
+          ingredientsStore.setBun({ ...props.item, uniqueId: uuid4() });
+        } else {
+          ingredientsStore.addFilling({ ...props.item, uniqueId: uuid4() });
+        }
         e.stopPropagation();
         e.preventDefault();
       }}
@@ -138,7 +142,7 @@ export function BurgerIngredients() {
           {ingredientsStore.ingredients
             .filter((item) => item.type == "bun")
             .map((item) => (
-              <IngredientsTable item={item} />
+              <IngredientsTable key={item._id} item={item} />
             ))}
         </div>
 
@@ -149,7 +153,7 @@ export function BurgerIngredients() {
           {ingredientsStore.ingredients
             .filter((item) => item.type == "sauce")
             .map((item) => (
-              <IngredientsTable item={item} />
+              <IngredientsTable key={item._id} item={item} />
             ))}
         </div>
 
@@ -160,7 +164,7 @@ export function BurgerIngredients() {
           {ingredientsStore.ingredients
             .filter((item) => item.type == "main")
             .map((item) => (
-              <IngredientsTable item={item} />
+              <IngredientsTable key={item._id} item={item} />
             ))}
         </div>
       </div>

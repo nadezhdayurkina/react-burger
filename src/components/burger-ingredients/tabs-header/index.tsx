@@ -14,6 +14,7 @@ export function Tabs(props: {
         .filter((tab) => tab)
         .map((tab) => (
           <Tab
+            key={tab}
             value={tab}
             active={tab == props.active}
             onClick={() => props.onActive?.(tab)}
@@ -21,13 +22,6 @@ export function Tabs(props: {
             {tab}
           </Tab>
         ))}
-
-      {/* <Tab value="two" active={current === "two"} onClick={setCurrent}>
-        Соусы
-      </Tab>
-      <Tab value="three" active={current === "three"} onClick={setCurrent}>
-        Начинки
-      </Tab> */}
     </div>
   );
 }

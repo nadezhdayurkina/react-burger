@@ -7,32 +7,30 @@ import {
 import styles from "./index.module.css";
 import clsx from "clsx";
 import { Modal } from "../modal";
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import { OrderDetails } from "../order-details";
 import { useIngredientsStore } from "../../store";
-import axios from "axios";
 import { useDrag, useDrop } from "react-dnd";
-import type { IngredientItem } from "../../slices/ingredients";
-
-export type Order = {
-  name: string;
-  order: {
-    number: number;
-  };
-  success: boolean;
-} | null;
+import type {
+  IngredientItem,
+  IngredientItemInConstructor,
+} from "../../slices/ingredients";
+import { v4 as uuid4 } from "uuid";
 
 function Ingredient(props: {
-  item: IngredientItem;
-  onMoved: (from: IngredientItem, to: IngredientItem) => void;
-  onDeleted: (item: IngredientItem) => void;
+  item: IngredientItemInConstructor;
+  onMoved: (
+    from: IngredientItemInConstructor,
+    to: IngredientItemInConstructor
+  ) => void;
+  onDeleted: (item: IngredientItemInConstructor) => void;
 }) {
-  const [, drag] = useDrag<IngredientItem>({
+  const [, drag] = useDrag<IngredientItemInConstructor>({
     type: "16190a86-1fd3-4389-9035-2833b3e11f9a",
     item: props.item,
   });
 
-  const [, drop] = useDrop<IngredientItem>({
+  const [, drop] = useDrop<IngredientItemInConstructor>({
     accept: "16190a86-1fd3-4389-9035-2833b3e11f9a",
     drop: (droppedItem) => {
       props.onMoved(droppedItem, props.item);
@@ -64,8 +62,11 @@ export function BurgerConstructor() {
   const [, drop] = useDrop<IngredientItem>({
     accept: "c71332a7-c027-4648-bebc-cf625b66d9d4",
     drop: (droppedItem: IngredientItem) => {
-      if (droppedItem.type == "bun") ingredientsStore.setBun(droppedItem);
-      else ingredientsStore.addFilling(droppedItem);
+      if (droppedItem.type == "bun") {
+        ingredientsStore.setBun({ ...droppedItem, uniqueId: uuid4() });
+      } else {
+        ingredientsStore.addFilling({ ...droppedItem, uniqueId: uuid4() });
+      }
     },
   });
 
@@ -84,62 +85,8 @@ export function BurgerConstructor() {
     return price;
   }, [ingredientsStore.bun, ingredientsStore.filling]);
 
-  const [order, setOrder] = useState<Order>(null);
-  const [error, setError] = useState<boolean>(false);
-
-  const ingredientIds = {
-    ingredients: [...ingredientsStore.filling, ingredientsStore.bun]
-      .map((item) => item?._id)
-      .filter((id) => id != null),
-  };
-
-  const [makeOrderProcessing, setMakeOrderProcessing] =
-    useState<boolean>(false);
-
-  function makeOrder() {
-    setMakeOrderProcessing(true);
-    axios
-      .post("https://norma.nomoreparties.space/api/orders", ingredientIds)
-      .then((resp) => {
-        setOrder(resp.data);
-      })
-      .catch(() => {
-        setError(true);
-        console.log("error", error);
-      })
-      .finally(() => {
-        setMakeOrderProcessing(false);
-      });
-  }
-
-  const move = (from: IngredientItem, to: IngredientItem) => {
-    const ingredientFilling = ingredientsStore.filling.filter(
-      (it) => it != from
-    );
-
-    if (
-      ingredientFilling.findIndex((it) => it == to) >
-      ingredientFilling.findIndex((it) => it == from)
-    )
-      ingredientFilling.splice(
-        ingredientFilling.findIndex((it) => it == to) + 1,
-        0,
-        from
-      );
-    else
-      ingredientFilling.splice(
-        ingredientFilling.findIndex((it) => it == to),
-        0,
-        from
-      );
-
-    ingredientsStore.setFilling(ingredientFilling);
-  };
-
-  const deleteItem = (ind: number) => {
-    const newFilling = ingredientsStore.filling.filter(
-      (it, index) => index != ind
-    );
+  const deleteItem = (index: number) => {
+    const newFilling = ingredientsStore.filling.filter((it, i) => index != i);
     ingredientsStore.setFilling(newFilling);
   };
 
@@ -151,7 +98,7 @@ export function BurgerConstructor() {
             <ConstructorElement
               type="top"
               isLocked={true}
-              text={ingredientsStore.bun.name}
+              text={ingredientsStore.bun.name + " (верх)"}
               price={ingredientsStore.bun.price}
               thumbnail={ingredientsStore.bun.image}
             />
@@ -162,8 +109,17 @@ export function BurgerConstructor() {
           <div className={styles.rows}>
             {ingredientsStore.filling.map((item, index) => (
               <Ingredient
+                key={item.uniqueId}
                 item={item}
-                onMoved={move}
+                onMoved={(from: IngredientItemInConstructor) => {
+                  const indexTo = index;
+
+                  const filling = ingredientsStore.filling.filter(
+                    (it) => it.uniqueId != from.uniqueId
+                  );
+                  filling.splice(indexTo, 0, from);
+                  ingredientsStore.setFilling(filling);
+                }}
                 onDeleted={() => {
                   deleteItem(index);
                 }}
@@ -177,7 +133,7 @@ export function BurgerConstructor() {
             <ConstructorElement
               type="bottom"
               isLocked={true}
-              text={ingredientsStore.bun.name}
+              text={ingredientsStore.bun.name + " (низ)"}
               price={ingredientsStore.bun.price}
               thumbnail={ingredientsStore.bun.image}
             />
@@ -196,22 +152,32 @@ export function BurgerConstructor() {
               type="primary"
               size="medium"
               onClick={() => {
-                makeOrder();
+                if (ingredientsStore.bun?._id == null) return;
+
+                let ingredientIds = [
+                  ...ingredientsStore.filling.map((it) => it._id),
+                  ingredientsStore.bun._id,
+                  ingredientsStore.bun._id,
+                ].filter((it) => it);
+
+                ingredientsStore.makeOrder(ingredientIds);
               }}
             >
               Оформить заказ
             </Button>
-            {(!!order || makeOrderProcessing) && (
+            {(!!ingredientsStore.order || ingredientsStore.orderProcessing) && (
               <Modal
                 onClose={() => {
-                  setOrder(null);
                   ingredientsStore.clearOrder();
+                  ingredientsStore.order = null;
                 }}
               >
-                {makeOrderProcessing && (
+                {ingredientsStore.orderProcessing && (
                   <div className={styles.loader}>заказ оформляется..</div>
                 )}
-                {!!order && <OrderDetails order={order.order.number} />}
+                {!!ingredientsStore.order && (
+                  <OrderDetails order={ingredientsStore.order.number} />
+                )}
               </Modal>
             )}
           </div>
