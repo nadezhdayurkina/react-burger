@@ -2,10 +2,10 @@ import styles from "./index.module.css";
 import donePng from "./done.png";
 import clsx from "clsx";
 
-export function OrderDetails() {
+export function OrderDetails(props: { order: number }) {
   return (
     <div className={styles.modal}>
-      <div className="text text_type_digits-large">123345</div>
+      <div className="text text_type_digits-large">{props.order}</div>
       <div className="text text_type_main-medium">идентификатор заказа</div>
       <img src={donePng} alt="галочка"></img>
       <div className="text text_type_main-small">Ваш заказ начали готовить</div>

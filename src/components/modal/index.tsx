@@ -1,14 +1,12 @@
-import { ReactElement, useEffect, useRef } from "react";
+import { ReactElement, useEffect } from "react";
 import styles from "./index.module.css";
 import { CloseIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import { ModalOverlay } from "../modal-overlay";
 
 export function Modal(props: {
-  children: ReactElement | ReactElement[];
+  children: ReactElement | (ReactElement | boolean)[] | boolean;
   onClose?: () => void;
 }) {
-  // const rootRef = useRef(null);
-
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
