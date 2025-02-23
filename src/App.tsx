@@ -1,35 +1,105 @@
 import "./App.css";
 import styles from "./App.module.css";
-// подгружаем common.css из библиотеки ЯП - эти стили применяются к root, header и т.д.
-// например, библиотека делает весь фон черным и меняет скроллы
 import "@ya.praktikum/react-developer-burger-ui-components";
 import { AppHeader } from "./components/app-header";
-import { LeftRight } from "./components/left-right";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { Login1Page } from "./pages/login1/login1";
+import { HomePage } from "./pages/home-page";
+import { Login } from "./pages/login";
+import { Register } from "./pages/register";
+import { ForgotPassword } from "./pages/forgot-password";
+import { ResetPassword } from "./pages/reset-password";
+import { Profile, ProfileInfo, OrderHistory } from "./pages/profile";
+import { useIngredientsStore, useUserStore } from "./store";
 import { useEffect } from "react";
-import { useIngredientsStore } from "./store";
+import { OnlyAuth, OnlyUnAuth } from "./components/protected-route";
+import { OrderFeed } from "./pages/order-feed";
+import { Modal } from "./components/modal";
+import { IngredientDetails } from "./components/ingredient-details";
 
 function App() {
+  const userStore = useUserStore();
   const ingredientsStore = useIngredientsStore();
+
+  const checkUserAuth = () => {
+    if (localStorage.getItem("accessToken")) {
+      userStore.authUser();
+      userStore.setIsAuthChecked(true);
+    } else {
+      userStore.setIsAuthChecked(true);
+    }
+  };
+
+  useEffect(() => {
+    checkUserAuth();
+  }, []);
+  const navigate = useNavigate();
 
   useEffect(() => {
     ingredientsStore.fetchIngredients();
   }, []);
 
+  let location = useLocation();
+  const background = location.state && location.state.background;
+
   return (
     <div className={styles.app}>
       <AppHeader />
-      {ingredientsStore.status == "loading" && (
-        <div className="text_type_main-medium text_color_inactive">
-          Данные загружаются...
-        </div>
-      )}
-      {ingredientsStore.status == "failed" && (
-        <div className="text_type_main-medium text_color_inactive">
-          Ошибка! Что-то пошло не так.
-        </div>
-      )}
-      {!!ingredientsStore.ingredients?.length && (
-        <LeftRight className={styles.leftRight} />
+
+      <Routes location={background || location}>
+        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/ingredients/:ingredientId"
+          element={<IngredientDetails />}
+        />
+
+        <Route path="/profile/" element={<OnlyAuth component={<Profile />} />}>
+          <Route index element={<OnlyAuth component={<ProfileInfo />} />} />
+          <Route
+            path="order-history"
+            element={<OnlyAuth component={<OrderHistory />} />}
+          />
+        </Route>
+
+        <Route path="/order-feed" element={<OrderFeed />} />
+        <Route
+          path="/register"
+          element={<OnlyUnAuth component={<Register />} />}
+        />
+        <Route path="/login" element={<OnlyUnAuth component={<Login />} />} />
+        <Route
+          path="/forgot-password"
+          element={<OnlyUnAuth component={<ForgotPassword />} />}
+        />
+        <Route
+          path="/reset-password"
+          element={
+            <OnlyUnAuth
+              component={<ResetPassword />}
+              requiredReferrer="/forgot-password"
+            />
+          }
+        />
+        <Route path="/profile/" element={<OnlyAuth component={<Profile />} />}>
+          <Route index element={<OnlyAuth component={<ProfileInfo />} />} />
+          <Route
+            path="order-history"
+            element={<OnlyAuth component={<OrderHistory />} />}
+          />
+        </Route>
+      </Routes>
+
+      {background && (
+        <Routes>
+          <Route
+            path="/ingredients/:ingredientId"
+            element={
+              <Modal onClose={() => navigate(`/`)}>
+                <IngredientDetails />
+              </Modal>
+            }
+          />
+        </Routes>
       )}
     </div>
   );

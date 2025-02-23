@@ -1,0 +1,16 @@
+.home {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100vw;
+    max-width: 1240px;
+    background-color:#131316;
+    overflow: auto;
+    margin: auto;
+    scrollbar-color: #8585AD #2F2F37 !important;
+  }
+  
+  .leftRight{
+    overflow: auto;
+    height: 100%;
+  }
