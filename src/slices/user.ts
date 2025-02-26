@@ -51,7 +51,10 @@ export const requestUserRegistration = createAsyncThunk(
   "user/register",
   async (userData: { email: string; password: string; name: string }) => {
     const { data } = await axios.post(`${BASE_URL}/auth/register`, userData);
-    return data.data as UserRegistrationResponse;
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
+
+    return data as UserRegistrationResponse;
   }
 );
 
@@ -59,6 +62,8 @@ export const loginUser = createAsyncThunk(
   "user/login",
   async (userData: { email: string; password: string }) => {
     const { data } = await axios.post(`${BASE_URL}/auth/login`, userData);
+    localStorage.setItem("accessToken", data.accessToken);
+    localStorage.setItem("refreshToken", data.refreshToken);
     return data as LoginResponse;
   }
 );
@@ -114,6 +119,8 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
   const { data } = await axios.post(`${BASE_URL}/auth/logout`, {
     token: refreshToken,
   });
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
   return data as {
     success: boolean;
     message: string;
@@ -142,15 +149,17 @@ const userSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+
       .addCase(requestUserRegistration.pending, (state) => {
         state.registrationProcessing = true;
       })
       .addCase(requestUserRegistration.fulfilled, (state, action) => {
         state.registrationProcessing = false;
-        localStorage.setItem("accessToken", action.payload.accessToken);
-        localStorage.setItem("refreshToken", action.payload.refreshToken);
+        state.email = action.payload.user.email;
+        state.name = action.payload.user.name;
       })
       .addCase(requestUserRegistration.rejected, (state) => {
+        state.registrationProcessing = false;
         state.errorRegistration = "error";
       })
 
@@ -158,8 +167,6 @@ const userSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.email = action.payload.user.email;
         state.name = action.payload.user.name;
-        localStorage.setItem("accessToken", action.payload.accessToken);
-        localStorage.setItem("refreshToken", action.payload.refreshToken);
       })
       .addCase(loginUser.rejected, (state) => {})
 
@@ -178,11 +185,9 @@ const userSlice = createSlice({
       .addCase(updateInfoUser.rejected, (state) => {})
 
       .addCase(logOut.pending, (state) => {})
-      .addCase(logOut.fulfilled, (state, action) => {
+      .addCase(logOut.fulfilled, (state) => {
         state.email = "";
         state.name = "";
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
       })
       .addCase(logOut.rejected, (state) => {});
   },

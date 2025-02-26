@@ -17,46 +17,49 @@ export function Register() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.container}>
-        <h1 className="text_type_main-medium">Регистрация</h1>
-        <Input
-          type={"text"}
-          placeholder={"имя"}
-          onChange={(e) => setName(e.target.value)}
-          value={name}
-          name={"name"}
-        />
-        <EmailInput
-          onChange={(e) => setEmail(e.target.value)}
-          value={email}
-          name={"email"}
-          isIcon={false}
-        />
-        <PasswordInput
-          onChange={(e) => setPassword(e.target.value)}
-          value={password}
-          name={"password"}
-        />
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          userStore.requestUserRegistration({
+            email,
+            password,
+            name,
+          });
+        }}
+      >
+        <div className={styles.container}>
+          <h1 className="text_type_main-medium">Регистрация</h1>
+          <Input
+            type={"text"}
+            placeholder={"имя"}
+            onChange={(e) => setName(e.target.value)}
+            value={name}
+            name={"name"}
+            autoComplete="username"
+          />
+          <EmailInput
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            name={"email"}
+            isIcon={false}
+            autoComplete="email"
+          />
+          <PasswordInput
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
+            name={"password"}
+            autoComplete="current-password"
+          />
 
-        <Button
-          htmlType="button"
-          type="primary"
-          size="medium"
-          onClick={() => {
-            userStore.requestUserRegistration({
-              email,
-              password,
-              name,
-            });
-          }}
-        >
-          Зарегистрироваться
-        </Button>
+          <Button htmlType="submit" type="primary" size="medium">
+            Зарегистрироваться
+          </Button>
 
-        <div className="text_type_main-default mt-15 text_color_inactive">
-          Уже зарегистрированы? <Link to="/login">Войти </Link>
+          <div className="text_type_main-default mt-15 text_color_inactive">
+            Уже зарегистрированы? <Link to="/login">Войти </Link>
+          </div>
         </div>
-      </div>
+      </form>
     </div>
   );
 }

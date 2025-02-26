@@ -3,6 +3,8 @@ import styles from "./index.module.css";
 import {
   Button,
   EmailInput,
+  Input,
+  PasswordInput,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useUserStore } from "../../store";
 import { useState } from "react";
@@ -64,35 +66,9 @@ export function ProfileInfo() {
 
   return (
     <div className={styles.inputContainer}>
-      <EmailInput
-        onChange={(e) => setName(e.target.value)}
-        value={name}
-        name={"login"}
-        placeholder="Логин"
-        isIcon={true}
-        onBlur={() => {}}
-      />
-      <EmailInput
-        onChange={(e) => setEmail(e.target.value)}
-        value={email}
-        name={"email"}
-        isIcon={true}
-        onBlur={() => {}}
-      />
-      <EmailInput
-        onChange={(e) => setPassword(e.target.value)}
-        value={password}
-        name={"password"}
-        placeholder="Пароль"
-        isIcon={true}
-        onBlur={() => {}}
-      />
-
-      <Button
-        htmlType="button"
-        type="primary"
-        size="medium"
-        onClick={() => {
+      <form
+        onSubmit={async (e) => {
+          e.preventDefault();
           const accessToken = localStorage.getItem("accessToken");
           userStore.updateInfoUser({
             accessToken,
@@ -102,20 +78,52 @@ export function ProfileInfo() {
           });
         }}
       >
-        Сохранить
-      </Button>
-      <Button
-        htmlType="button"
-        type="secondary"
-        size="medium"
-        onClick={() => {
-          setName(userStore.name);
-          setEmail(userStore.email);
-          setPassword("");
-        }}
-      >
-        Отмена
-      </Button>
+        <Input
+          placeholder={"Логин"}
+          onChange={(e) => setName(e.target.value)}
+          value={name}
+          name={"name"}
+          extraClass="mb-3"
+          onBlur={() => {}}
+          icon="EditIcon"
+        />
+
+        <EmailInput
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          name={"email"}
+          extraClass="mb-3"
+          isIcon={true}
+          onBlur={() => {}}
+          autoComplete="username"
+        />
+
+        <PasswordInput
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          name={"password"}
+          extraClass="mb-3"
+          icon="EditIcon"
+          placeholder="Пароль"
+          onBlur={() => {}}
+          autoComplete="current-password"
+        />
+        <Button
+          htmlType="button"
+          type="secondary"
+          size="medium"
+          onClick={() => {
+            setName(userStore.name);
+            setEmail(userStore.email);
+            setPassword("");
+          }}
+        >
+          Отмена
+        </Button>
+        <Button htmlType="submit" type="primary" size="medium">
+          Сохранить
+        </Button>
+      </form>
     </div>
   );
 }

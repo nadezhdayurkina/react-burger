@@ -3,7 +3,6 @@ import styles from "./App.module.css";
 import "@ya.praktikum/react-developer-burger-ui-components";
 import { AppHeader } from "./components/app-header";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { Login1Page } from "./pages/login1/login1";
 import { HomePage } from "./pages/home-page";
 import { Login } from "./pages/login";
 import { Register } from "./pages/register";
