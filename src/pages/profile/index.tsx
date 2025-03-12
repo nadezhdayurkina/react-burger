@@ -7,7 +7,7 @@ import {
   PasswordInput,
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import { useUserStore } from "../../store";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 export function Profile() {
@@ -60,18 +60,16 @@ export function Profile() {
 export function ProfileInfo() {
   const userStore = useUserStore();
 
-  const [name, setName] = useState(userStore.name);
-  const [email, setEmail] = useState(userStore.email);
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState<string>(userStore.name);
+  const [email, setEmail] = useState<string>(userStore.email);
+  const [password, setPassword] = useState<string>("");
 
   return (
     <div className={styles.inputContainer}>
       <form
-        onSubmit={async (e) => {
+        onSubmit={async (e: FormEvent<HTMLFormElement>) => {
           e.preventDefault();
-          const accessToken = localStorage.getItem("accessToken");
           userStore.updateInfoUser({
-            accessToken,
             email,
             password,
             name,

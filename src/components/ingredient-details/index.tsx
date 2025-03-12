@@ -7,13 +7,11 @@ export function IngredientDetails() {
   const { ingredientId } = useParams();
   const ingredientsStore = useIngredientsStore();
 
-  const currentIngredient = ingredientsStore.ingredients.find(
-    (item) => item._id == ingredientId
-  );
+  const currentIngredient =
+    ingredientsStore.ingredientsById?.[ingredientId?.toString() ?? ""];
 
-  if (!currentIngredient) {
+  if (!currentIngredient)
     return <div className="text_type_main-medium">Ингредиент не найден</div>;
-  }
 
   return (
     <div className={styles.modal}>

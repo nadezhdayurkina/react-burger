@@ -5,30 +5,18 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from "./index.module.css";
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { BASE_URL } from "../../utils/config";
-import axios from "axios";
-
-async function resetPassword(password: string, token: string) {
-  const { data } = await axios.post(`${BASE_URL}/password-reset/reset`, {
-    password,
-    token,
-  });
-  return data as {
-    success: boolean;
-    message: string;
-  };
-}
+import { FormEvent, useState } from "react";
+import { resetPassword } from "../../utils/api";
 
 export function ResetPassword() {
-  const [password, setPassword] = useState("");
-  const [passwordToken, setPasswordToken] = useState("");
+  const [password, setPassword] = useState<string>("");
+  const [passwordToken, setPasswordToken] = useState<string>("");
   const navigate = useNavigate();
 
   return (
     <div className={styles.page}>
       <form
-        onSubmit={async (e) => {
+        onSubmit={async (e: FormEvent<HTMLFormElement>) => {
           e.preventDefault();
           let result = await resetPassword(password, passwordToken);
           if (result.success) {

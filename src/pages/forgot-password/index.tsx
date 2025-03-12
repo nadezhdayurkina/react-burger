@@ -4,34 +4,22 @@ import {
 } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from "./index.module.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import axios from "axios";
-import { BASE_URL } from "../../utils/config";
-import { useState } from "react";
-
-// TODO: вынести потом в api файл или удалить коммент
-async function forgotPassword(email: string) {
-  const { data } = await axios.post(`${BASE_URL}/password-reset`, { email });
-  return data as {
-    success: boolean;
-    message: string;
-  };
-}
+import { FormEvent, useState } from "react";
+import { forgotPassword } from "../../utils/api";
 
 export function ForgotPassword() {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState<string>("");
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
     <div className={styles.page}>
       <form
-        onSubmit={async (e) => {
+        onSubmit={async (e: FormEvent<HTMLFormElement>) => {
           e.preventDefault();
-          let result = await forgotPassword(email);
-          // TODO: message еще надо показать если success == false
-          if (result.success) {
-            navigate(`/reset-password`, { state: { from: location.pathname } });
-          }
+          // можно передать любой email, запрос отработает
+          await forgotPassword(email);
+          navigate(`/reset-password`, { state: { from: location.pathname } });
         }}
       >
         <div className={styles.container}>

@@ -1,7 +1,11 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASE_URL } from "../utils/config";
-import { axiosInstance } from "../utils/api";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import {
+  auth,
+  axiosInstance,
+  login,
+  updateInfo,
+  userRegister,
+} from "../../utils/api";
 
 interface InitialState {
   email: string;
@@ -27,96 +31,62 @@ const initialState: InitialState = {
   isAuthChecked: false,
 };
 
-type UserRegistrationResponse = {
-  success: boolean;
-  user: {
-    email: string;
-    name: string;
-  };
-  accessToken: string;
-  refreshToken: string;
-};
-
-type LoginResponse = {
-  success: boolean;
-  accessToken: string;
-  refreshToken: string;
-  user: {
-    email: string;
-    name: string;
-  };
-};
-
 export const requestUserRegistration = createAsyncThunk(
   "user/register",
-  async (userData: { email: string; password: string; name: string }) => {
-    const { data } = await axios.post(`${BASE_URL}/auth/register`, userData);
+  async ({
+    email,
+    password,
+    name,
+  }: {
+    email: string;
+    password: string;
+    name: string;
+  }) => {
+    const data = await userRegister(email, password, name);
+
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
 
-    return data as UserRegistrationResponse;
+    return data;
   }
 );
 
 export const loginUser = createAsyncThunk(
   "user/login",
-  async (userData: { email: string; password: string }) => {
-    const { data } = await axios.post(`${BASE_URL}/auth/login`, userData);
+  async ({ email, password }: { email: string; password: string }) => {
+    const data = await login(email, password);
+
     localStorage.setItem("accessToken", data.accessToken);
     localStorage.setItem("refreshToken", data.refreshToken);
-    return data as LoginResponse;
+
+    return data;
   }
 );
 
 export const authUser = createAsyncThunk("auth/user", async () => {
-  let { data } = await axiosInstance.get("/auth/user", {
-    // headers: {
-    //   Authorization: localStorage.getItem("accessToken"),
-    // },
-  });
-  return data as {
-    success: boolean;
-    user: {
-      email: string;
-      name: string;
-    };
-  };
+  let data = await auth();
+  return data;
 });
 
 export const updateInfoUser = createAsyncThunk(
   "auth/user/update",
   async (userData: {
-    accessToken: string | null;
     email: string | null;
     password: string | null;
     name: string | null;
   }) => {
-    const { data } = await axios.patch(
-      `${BASE_URL}/auth/user`,
-      {
-        name: userData.name,
-        email: userData.email,
-        password: userData.password,
-      },
-      {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      }
-    );
-    return data as {
-      success: boolean;
-      user: {
-        email: string;
-        name: string;
-      };
-    };
+    const data = await updateInfo({
+      name: userData.name,
+      email: userData.email,
+      password: userData.password,
+    });
+    return data;
   }
 );
 
 export const logOut = createAsyncThunk("auth/logout", async () => {
   const refreshToken = localStorage.getItem("refreshToken");
-  const { data } = await axios.post(`${BASE_URL}/auth/logout`, {
+  const { data } = await axiosInstance.post("/auth/logout", {
     token: refreshToken,
   });
   localStorage.removeItem("accessToken");
@@ -130,26 +100,9 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
 const userSlice = createSlice({
   name: "user",
   initialState,
-  reducers: {
-    setIsAuthChecked: (state, action: PayloadAction<boolean>) => {
-      state.isAuthChecked = action.payload;
-    },
-    setEmail: (state, action: PayloadAction<string>) => {
-      state.email = action.payload;
-    },
-    setPassword: (state, action: PayloadAction<string>) => {
-      state.password = action.payload;
-    },
-    setName: (state, action: PayloadAction<string>) => {
-      state.name = action.payload;
-    },
-    setToken: (state, action: PayloadAction<string>) => {
-      state.passwordToken = action.payload;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-
       .addCase(requestUserRegistration.pending, (state) => {
         state.registrationProcessing = true;
       })
@@ -163,33 +116,29 @@ const userSlice = createSlice({
         state.errorRegistration = "error";
       })
 
-      .addCase(loginUser.pending, (state) => {})
       .addCase(loginUser.fulfilled, (state, action) => {
         state.email = action.payload.user.email;
         state.name = action.payload.user.name;
       })
-      .addCase(loginUser.rejected, (state) => {})
 
-      .addCase(authUser.pending, (state) => {})
       .addCase(authUser.fulfilled, (state, action) => {
         state.email = action.payload.user.email;
         state.name = action.payload.user.name;
+        state.isAuthChecked = true;
       })
-      .addCase(authUser.rejected, (state) => {})
+      .addCase(authUser.rejected, (state) => {
+        state.isAuthChecked = true;
+      })
 
-      .addCase(updateInfoUser.pending, (state) => {})
       .addCase(updateInfoUser.fulfilled, (state, action) => {
         state.email = action.payload.user.email;
         state.name = action.payload.user.name;
       })
-      .addCase(updateInfoUser.rejected, (state) => {})
 
-      .addCase(logOut.pending, (state) => {})
       .addCase(logOut.fulfilled, (state) => {
         state.email = "";
         state.name = "";
-      })
-      .addCase(logOut.rejected, (state) => {});
+      });
   },
 });
 

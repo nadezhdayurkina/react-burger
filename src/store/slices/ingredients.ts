@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import axios from "axios";
-import { BASE_URL } from "../utils/config";
+import { axiosInstance } from "../../utils/api";
 
 export type IngredientItem = {
   _id: string;
@@ -26,8 +25,8 @@ export interface IngredientItemInConstructor extends IngredientItem {
 }
 interface InitialState {
   ingredients: IngredientItem[];
+  ingredientsById: { [_id: string]: IngredientItem };
   status: "idle" | "loading" | "succeeded" | "failed";
-  currentIngredient: IngredientItem | null;
   bun: IngredientItemInConstructor | null;
   filling: IngredientItemInConstructor[];
   order: {
@@ -41,8 +40,8 @@ interface InitialState {
 
 const initialState: InitialState = {
   ingredients: [],
+  ingredientsById: {},
   status: "idle",
-  currentIngredient: null,
   bun: null,
   filling: [],
   order: null,
@@ -50,13 +49,10 @@ const initialState: InitialState = {
   orderProcessing: false,
 };
 
-export const fetchIngredients = createAsyncThunk(
-  "fetchIngredients",
-  async () => {
-    const { data } = await axios.get(`${BASE_URL}/ingredients`);
-    return data.data;
-  }
-);
+export const loadIngredients = createAsyncThunk("loadIngredients", async () => {
+  const { data } = await axiosInstance.get(`/ingredients`);
+  return data.data as IngredientItem[];
+});
 
 export const makeOrder = createAsyncThunk(
   "makeOrder",
@@ -71,14 +67,10 @@ export const makeOrder = createAsyncThunk(
           };
           success: boolean;
         };
-      } = await axios.post(`${BASE_URL}/orders`, orderData, {
-        headers: {
-          Authorization: localStorage.getItem("accessToken"),
-        },
-      });
+      } = await axiosInstance.post(`/orders`, orderData);
       return response.data;
     } catch (err: any) {
-      return rejectWithValue(err.response.data);
+      return rejectWithValue(err?.response?.data);
     }
   }
 );
@@ -98,26 +90,28 @@ const ingredientsSlice = createSlice({
       state.bun = null;
       state.order = null;
     },
-    setCurrentIngredient: (
-      state,
-      action: PayloadAction<InitialState["currentIngredient"]>
-    ) => {
-      state.currentIngredient = action.payload;
-    },
     setFilling: (state, action: PayloadAction<InitialState["filling"]>) => {
       state.filling = action.payload;
     },
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchIngredients.pending, (state) => {
+      .addCase(loadIngredients.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(fetchIngredients.fulfilled, (state, action) => {
+      .addCase(loadIngredients.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.ingredients = action.payload;
+
+        state.ingredientsById = state.ingredients.reduce(
+          (dict: { [key: string]: IngredientItem }, item) => {
+            dict[item._id] = item;
+            return dict;
+          },
+          {}
+        );
       })
-      .addCase(fetchIngredients.rejected, (state) => {
+      .addCase(loadIngredients.rejected, (state) => {
         state.status = "failed";
       })
       .addCase(makeOrder.pending, (state) => {
@@ -142,6 +136,6 @@ const ingredientsSlice = createSlice({
 export const ingredientsReducer = ingredientsSlice.reducer;
 export const ingredientsActions = {
   ...ingredientsSlice.actions,
-  fetchIngredients,
+  loadIngredients,
   makeOrder,
 };

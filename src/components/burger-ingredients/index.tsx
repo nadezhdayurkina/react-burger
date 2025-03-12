@@ -6,12 +6,12 @@ import { useIngredientsStore } from "../../store";
 import { CardsHeader } from "./cards-header";
 import { CardIngredient } from "./card-ingredient";
 import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
-import { IngredientItem } from "../../slices/ingredients";
+import { IngredientItem } from "../../store/slices/ingredients";
 import { useDrag } from "react-dnd";
 import { v4 as uuid4 } from "uuid";
 import { Link, useLocation } from "react-router-dom";
 
-function IngredientsTable(props: { item: IngredientItem }) {
+function IngredientInTable(props: { item: IngredientItem; count?: number }) {
   const location = useLocation();
   const ingredientsStore = useIngredientsStore();
 
@@ -19,17 +19,6 @@ function IngredientsTable(props: { item: IngredientItem }) {
     type: "c71332a7-c027-4648-bebc-cf625b66d9d4",
     item: props.item,
   });
-
-  const fillingCountById = useMemo(() => {
-    const fillingCountById: { [id: string]: number } = {};
-    ingredientsStore.filling?.forEach((it) => {
-      if (!fillingCountById[it._id]) fillingCountById[it._id] = 0;
-      fillingCountById[it._id] += 1;
-    });
-
-    return fillingCountById;
-  }, [ingredientsStore.filling]);
-
   return (
     <div
       ref={(node) => drag(node)}
@@ -45,17 +34,10 @@ function IngredientsTable(props: { item: IngredientItem }) {
         e.preventDefault();
       }}
     >
-      {props.item == ingredientsStore.bun && (
-        <Counter count={2} size="default" extraClass="m-1" />
+      {!!props.count && props.count > 0 && (
+        <Counter count={props.count} size="default" extraClass="m-1" />
       )}
 
-      {fillingCountById[props.item._id] > 0 && (
-        <Counter
-          count={fillingCountById[props.item._id]}
-          size="default"
-          extraClass="m-1"
-        />
-      )}
       <Link
         key={props.item._id}
         to={`/ingredients/${props.item._id}`}
@@ -122,6 +104,16 @@ export function BurgerIngredients() {
 
   useEffect(() => sectionActive(), []);
 
+  const fillingCountById = useMemo(() => {
+    const fillingCountById: { [id: string]: number } = {};
+    ingredientsStore.filling?.forEach((it) => {
+      if (!fillingCountById[it._id]) fillingCountById[it._id] = 0;
+      fillingCountById[it._id] += 1;
+    });
+
+    return fillingCountById;
+  }, [ingredientsStore.filling]);
+
   return (
     <div className={styles.burgerIngredients}>
       <h1 className={clsx(styles.title, "text_type_main-large")}>
@@ -140,7 +132,11 @@ export function BurgerIngredients() {
           {ingredientsStore.ingredients
             .filter((item) => item.type == "bun")
             .map((item) => (
-              <IngredientsTable key={item._id} item={item} />
+              <IngredientInTable
+                key={item._id}
+                item={item}
+                count={item._id === ingredientsStore.bun?._id ? 2 : 0}
+              />
             ))}
         </div>
 
@@ -151,7 +147,11 @@ export function BurgerIngredients() {
           {ingredientsStore.ingredients
             .filter((item) => item.type == "sauce")
             .map((item) => (
-              <IngredientsTable key={item._id} item={item} />
+              <IngredientInTable
+                key={item._id}
+                item={item}
+                count={fillingCountById[item._id]}
+              />
             ))}
         </div>
 
@@ -162,7 +162,11 @@ export function BurgerIngredients() {
           {ingredientsStore.ingredients
             .filter((item) => item.type == "main")
             .map((item) => (
-              <IngredientsTable key={item._id} item={item} />
+              <IngredientInTable
+                key={item._id}
+                item={item}
+                count={fillingCountById[item._id]}
+              />
             ))}
         </div>
       </div>
