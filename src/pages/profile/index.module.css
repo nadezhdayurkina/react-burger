@@ -1,0 +1,25 @@
+.page {
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    gap: 60px;
+    padding-left: 35px;
+    padding-top: 20%;
+}
+
+.navigationBar {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.logOut {
+cursor: pointer;
+}

@@ -9,13 +9,14 @@ import clsx from "clsx";
 import { Modal } from "../modal";
 import { useMemo } from "react";
 import { OrderDetails } from "../order-details";
-import { useIngredientsStore } from "../../store";
+import { useIngredientsStore, useUserStore } from "../../store";
 import { useDrag, useDrop } from "react-dnd";
 import type {
   IngredientItem,
   IngredientItemInConstructor,
 } from "../../slices/ingredients";
 import { v4 as uuid4 } from "uuid";
+import { useNavigate } from "react-router-dom";
 
 function Ingredient(props: {
   item: IngredientItemInConstructor;
@@ -71,6 +72,8 @@ export function BurgerConstructor() {
   });
 
   const ingredientsStore = useIngredientsStore();
+  const userStore = useUserStore();
+  const navigate = useNavigate();
 
   const totalPrice = useMemo(() => {
     let price = 0;
@@ -152,15 +155,16 @@ export function BurgerConstructor() {
               type="primary"
               size="medium"
               onClick={() => {
+                if (!userStore.name) navigate(`/login`);
                 if (ingredientsStore.bun?._id == null) return;
 
-                let ingredientIds = [
+                const ingredientIds = [
                   ...ingredientsStore.filling.map((it) => it._id),
                   ingredientsStore.bun._id,
                   ingredientsStore.bun._id,
                 ].filter((it) => it);
 
-                ingredientsStore.makeOrder(ingredientIds);
+                if (userStore.name) ingredientsStore.makeOrder(ingredientIds);
               }}
             >
               Оформить заказ
@@ -173,7 +177,19 @@ export function BurgerConstructor() {
                 }}
               >
                 {ingredientsStore.orderProcessing && (
-                  <div className={styles.loader}>заказ оформляется..</div>
+                  <div className={styles.loaderContainer}>
+                    <div className="text_type_main-medium">
+                      заказ оформляется...
+                    </div>
+                    <div className={styles.loader}>
+                      <div className={styles.face}>
+                        <div className={styles.circle}></div>
+                      </div>
+                      <div className={styles.face}>
+                        <div className={styles.circle}></div>
+                      </div>
+                    </div>
+                  </div>
                 )}
                 {!!ingredientsStore.order && (
                   <OrderDetails order={ingredientsStore.order.number} />

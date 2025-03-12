@@ -3,16 +3,16 @@ import styles from "./index.module.css";
 import { Tabs } from "./tabs-header";
 import clsx from "clsx";
 import { useIngredientsStore } from "../../store";
-import { IngredientDetails } from "../ingredient-details";
-import { Modal } from "../modal";
 import { CardsHeader } from "./cards-header";
 import { CardIngredient } from "./card-ingredient";
 import { Counter } from "@ya.praktikum/react-developer-burger-ui-components";
 import { IngredientItem } from "../../slices/ingredients";
 import { useDrag } from "react-dnd";
 import { v4 as uuid4 } from "uuid";
+import { Link, useLocation } from "react-router-dom";
 
 function IngredientsTable(props: { item: IngredientItem }) {
+  const location = useLocation();
   const ingredientsStore = useIngredientsStore();
 
   const [, drag] = useDrag<IngredientItem>({
@@ -44,9 +44,6 @@ function IngredientsTable(props: { item: IngredientItem }) {
         e.stopPropagation();
         e.preventDefault();
       }}
-      onClick={() => {
-        ingredientsStore.setCurrentIngredient(props.item);
-      }}
     >
       {props.item == ingredientsStore.bun && (
         <Counter count={2} size="default" extraClass="m-1" />
@@ -59,13 +56,20 @@ function IngredientsTable(props: { item: IngredientItem }) {
           extraClass="m-1"
         />
       )}
-
-      <CardIngredient
+      <Link
         key={props.item._id}
-        name={props.item.name}
-        image={props.item.image}
-        price={props.item.price}
-      />
+        to={`/ingredients/${props.item._id}`}
+        state={{ background: location }}
+        className={styles.link}
+      >
+        <CardIngredient
+          key={props.item._id}
+          item={props.item}
+          name={props.item.name}
+          image={props.item.image}
+          price={props.item.price}
+        />
+      </Link>
     </div>
   );
 }
@@ -129,12 +133,6 @@ export function BurgerIngredients() {
         ref={containerRef}
         onScroll={() => sectionActive()}
       >
-        {ingredientsStore.currentIngredient && (
-          <Modal onClose={() => ingredientsStore.setCurrentIngredient(null)}>
-            <IngredientDetails />
-          </Modal>
-        )}
-
         <div ref={bunsRef}>
           <CardsHeader header="Булки" />
         </div>

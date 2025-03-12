@@ -17,16 +17,19 @@ If you are developing a production application, we recommend updating the config
 export default {
   // other rules...
   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
+    ecmaVersion: "latest",
+    sourceType: "module",
+    project: ["./tsconfig.json", "./tsconfig.node.json"],
     tsconfigRootDir: __dirname,
   },
-}
+};
 ```
 
 - Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
 - Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
 - Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
 
-В приложении  используется [библиотека компоненотов Яндекс Практикум](https://yandex-practicum.github.io/react-developer-burger-ui-components/docs/).
+В приложении используется [библиотека компоненотов Яндекс Практикум](https://yandex-practicum.github.io/react-developer-burger-ui-components/docs/).
+
+просроченный accessToken
+Beare1r eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YWNkNWI2MTMzYWNkMDAxYmU1MDdkZSIsImlhdCI6MTczOTg4NDE2NSwiZXhwIjoxNzM5ODg1MzY1fQ.oWFKohFt8oxLPwFAfDMocDXw_xCTzEcvDd92i1ZuV3I

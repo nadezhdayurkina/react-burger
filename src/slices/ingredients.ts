@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import axios from "axios";
-import { BASE_URL } from "../../utils/apiConfig";
+import { BASE_URL } from "../utils/config";
 
 export type IngredientItem = {
   _id: string;
@@ -24,7 +24,6 @@ interface OrderData {
 export interface IngredientItemInConstructor extends IngredientItem {
   uniqueId: string;
 }
-// uuid4()
 interface InitialState {
   ingredients: IngredientItem[];
   status: "idle" | "loading" | "succeeded" | "failed";
@@ -63,7 +62,7 @@ export const makeOrder = createAsyncThunk(
   "makeOrder",
   async (ingredientIds: string[], { rejectWithValue }) => {
     try {
-      let orderData: OrderData = { ingredients: ingredientIds };
+      const orderData: OrderData = { ingredients: ingredientIds };
       const response: {
         data: {
           name: string;
@@ -72,7 +71,11 @@ export const makeOrder = createAsyncThunk(
           };
           success: boolean;
         };
-      } = await axios.post(`${BASE_URL}/orders`, orderData);
+      } = await axios.post(`${BASE_URL}/orders`, orderData, {
+        headers: {
+          Authorization: localStorage.getItem("accessToken"),
+        },
+      });
       return response.data;
     } catch (err: any) {
       return rejectWithValue(err.response.data);
