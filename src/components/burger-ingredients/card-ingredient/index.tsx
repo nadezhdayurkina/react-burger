@@ -1,7 +1,7 @@
 import { CurrencyIcon } from "@ya.praktikum/react-developer-burger-ui-components";
 import styles from "./index.module.css";
 import clsx from "clsx";
-import { IngredientItem } from "../../../slices/ingredients";
+import { IngredientItem } from "../../../store/slices/ingredients";
 
 export function CardIngredient(props: {
   item: IngredientItem;

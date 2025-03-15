@@ -14,7 +14,7 @@ import { useDrag, useDrop } from "react-dnd";
 import type {
   IngredientItem,
   IngredientItemInConstructor,
-} from "../../slices/ingredients";
+} from "../../store/slices/ingredients";
 import { v4 as uuid4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 
@@ -89,7 +89,7 @@ export function BurgerConstructor() {
   }, [ingredientsStore.bun, ingredientsStore.filling]);
 
   const deleteItem = (index: number) => {
-    const newFilling = ingredientsStore.filling.filter((it, i) => index != i);
+    const newFilling = ingredientsStore.filling.filter((_, i) => index != i);
     ingredientsStore.setFilling(newFilling);
   };
 

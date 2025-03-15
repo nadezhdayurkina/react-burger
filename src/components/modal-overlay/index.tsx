@@ -5,13 +5,13 @@ export function ModalOverlay(props: {
   children: ReactElement | ReactElement[];
   onClose?: () => void;
 }) {
-  const rootRef = useRef(null);
+  const rootRef = useRef<HTMLDivElement>(null);
 
   return (
     <div
       className={styles.containerModal}
       ref={rootRef}
-      onClick={(e) => {
+      onClick={(e: React.MouseEvent<HTMLDivElement>) => {
         if (e.target == rootRef.current) props.onClose?.();
       }}
     >

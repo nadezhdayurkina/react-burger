@@ -20,23 +20,12 @@ function App() {
   const userStore = useUserStore();
   const ingredientsStore = useIngredientsStore();
 
-  const checkUserAuth = () => {
-    if (localStorage.getItem("accessToken")) {
-      userStore.authUser();
-      userStore.setIsAuthChecked(true);
-    } else {
-      userStore.setIsAuthChecked(true);
-    }
-  };
-
   useEffect(() => {
-    checkUserAuth();
+    userStore.authUser();
+    ingredientsStore.loadIngredients();
   }, []);
+
   const navigate = useNavigate();
-
-  useEffect(() => {
-    ingredientsStore.fetchIngredients();
-  }, []);
 
   let location = useLocation();
   const background = location.state && location.state.background;

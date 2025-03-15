@@ -7,18 +7,18 @@ import {
 import styles from "./index.module.css";
 import { Link } from "react-router-dom";
 import { useUserStore } from "../../store";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 
 export function Register() {
   const userStore = useUserStore();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [name, setName] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
 
   return (
     <div className={styles.page}>
       <form
-        onSubmit={(e) => {
+        onSubmit={(e: FormEvent<HTMLFormElement>) => {
           e.preventDefault();
           userStore.requestUserRegistration({
             email,

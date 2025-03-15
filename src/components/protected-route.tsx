@@ -1,6 +1,6 @@
 import React from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { useUserStore } from "../store.ts";
+import { useUserStore } from "../store/index.ts";
 
 type TProtectedProps = {
   onlyUnAuth?: boolean;
@@ -8,7 +8,7 @@ type TProtectedProps = {
   requiredReferrer?: string | null;
 };
 
-const Protected = ({
+export const Protected = ({
   onlyUnAuth = false,
   component,
   requiredReferrer = null,

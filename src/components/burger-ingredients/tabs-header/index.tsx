@@ -6,7 +6,7 @@ import clsx from "clsx";
 export function Tabs(props: {
   tabs: string[];
   active?: string | null;
-  onActive?: (tqb: string) => void;
+  onActive?: (tab: string) => void;
 }) {
   return (
     <div className={clsx(styles.tabs, "bddf82798f344c86a3296c2e684e779c")}>
