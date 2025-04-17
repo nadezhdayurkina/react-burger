@@ -41,7 +41,7 @@ function IngredientInTable(props: { item: IngredientItem; count?: number }) {
       <Link
         key={props.item._id}
         to={`/ingredients/${props.item._id}`}
-        state={{ background: location }}
+        state={{ ingredientBackground: location }}
         className={styles.link}
       >
         <CardIngredient

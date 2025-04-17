@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { axiosInstance } from "../../utils/api";
+import { OrderApi } from "./orders-ws";
 
 export type IngredientItem = {
   _id: string;
@@ -20,6 +21,11 @@ interface OrderData {
   ingredients: string[];
 }
 
+interface OrderDetailsResponse {
+  success: boolean;
+  orders: OrderApi[];
+}
+
 export interface IngredientItemInConstructor extends IngredientItem {
   uniqueId: string;
 }
@@ -36,6 +42,11 @@ interface InitialState {
   } | null;
   errorOrder: string | null | unknown;
   orderProcessing: boolean;
+  currentOrder: {
+    data: OrderApi | null;
+    loading: boolean;
+    error: string | null;
+  };
 }
 
 const initialState: InitialState = {
@@ -47,10 +58,15 @@ const initialState: InitialState = {
   order: null,
   errorOrder: null,
   orderProcessing: false,
+  currentOrder: {
+    data: null,
+    loading: false,
+    error: null,
+  },
 };
 
 export const loadIngredients = createAsyncThunk("loadIngredients", async () => {
-  const { data } = await axiosInstance.get(`/ingredients`);
+  const { data } = await axiosInstance.get(`/api/ingredients`);
   return data.data as IngredientItem[];
 });
 
@@ -67,10 +83,27 @@ export const makeOrder = createAsyncThunk(
           };
           success: boolean;
         };
-      } = await axiosInstance.post(`/orders`, orderData);
+      } = await axiosInstance.post(`/api/orders`, orderData);
       return response.data;
     } catch (err: any) {
       return rejectWithValue(err?.response?.data);
+    }
+  }
+);
+
+export const fetchOrderByNumber = createAsyncThunk(
+  "orders/fetchByNumber",
+  async (orderNumber: string, { rejectWithValue }) => {
+    try {
+      const response = await axiosInstance.get<OrderDetailsResponse>(
+        `/api/orders/${orderNumber}`
+      );
+      if (!response.data.success || !response.data.orders.length) {
+        throw new Error("Заказ не найден");
+      }
+      return response.data.orders[0];
+    } catch (err: any) {
+      return rejectWithValue(err?.response?.data?.message || err.message);
     }
   }
 );
@@ -129,6 +162,18 @@ const ingredientsSlice = createSlice({
       .addCase(makeOrder.rejected, (state, action) => {
         state.orderProcessing = false;
         state.errorOrder = action.payload;
+      })
+      .addCase(fetchOrderByNumber.pending, (state) => {
+        state.currentOrder.loading = true;
+        state.currentOrder.error = null;
+      })
+      .addCase(fetchOrderByNumber.fulfilled, (state, action) => {
+        state.currentOrder.loading = false;
+        state.currentOrder.data = action.payload;
+      })
+      .addCase(fetchOrderByNumber.rejected, (state, action) => {
+        state.currentOrder.loading = false;
+        state.currentOrder.error = action.payload as string;
       });
   },
 });
@@ -138,4 +183,5 @@ export const ingredientsActions = {
   ...ingredientsSlice.actions,
   loadIngredients,
   makeOrder,
+  fetchOrderByNumber,
 };

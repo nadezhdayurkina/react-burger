@@ -1,0 +1,54 @@
+.statistics {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.list {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.progress {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    height: 206px;
+    width: 272px;
+}
+
+.progressColumns {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    justify-content: start;
+}
+
+.progressColumn {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+    height: 206px;
+    width: 100px;
+}
+
+.orderReady {
+    color: #00CCCC;
+    margin-bottom: 8px;
+}
+
+.orderInProgress {
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.bottom {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    top: 155px;
+}

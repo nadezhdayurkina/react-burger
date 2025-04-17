@@ -5,21 +5,32 @@
     justify-content: start;
     gap: 60px;
     padding-left: 35px;
-    padding-top: 20%;
 }
 
 .navigationBar {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    padding-top: 20%;
+
 }
 
 .inputContainer {
     display: flex;
     flex-direction: column;
     gap: 24px;
+    padding-top: 20%;
+
 }
 
 .logOut {
 cursor: pointer;
+}
+
+.feed {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
 }

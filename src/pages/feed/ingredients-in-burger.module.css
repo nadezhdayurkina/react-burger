@@ -1,0 +1,41 @@
+
+.imageWrapper {
+    position: relative;
+    height: 70px;
+}
+
+.imageBorder {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    position: absolute;
+    height: 68px;
+    width: 68px;
+    border-radius: 100%;
+    background: linear-gradient(to left bottom,#4C4CFF,#801AB2);
+}
+
+.image {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    background-color: rgb(0, 0, 0);
+    height: 64px;
+    width: 64px;
+    border-radius: 50%;
+    position: relative;
+}
+
+
+
+.more {
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #F2F2F3;
+}

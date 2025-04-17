@@ -86,7 +86,7 @@ export const updateInfoUser = createAsyncThunk(
 
 export const logOut = createAsyncThunk("auth/logout", async () => {
   const refreshToken = localStorage.getItem("refreshToken");
-  const { data } = await axiosInstance.post("/auth/logout", {
+  const { data } = await axiosInstance.post("/api/auth/logout", {
     token: refreshToken,
   });
   localStorage.removeItem("accessToken");
