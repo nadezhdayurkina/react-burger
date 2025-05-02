@@ -1,18 +1,15 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { useEffect, useState } from "react";
-import { refreshToken } from "../../utils/api";
+import { fetchUserOrders, refreshToken } from "../../utils/api";
 
 export interface InitialState {
   userOrdersPending?: boolean;
   userOrders: OrderApi[];
-  socketConnected: boolean;
   error?: string;
 }
 
 const initialState: InitialState = {
   userOrdersPending: undefined,
   userOrders: [],
-  socketConnected: false,
 };
 
 export interface OrderApi {
@@ -32,59 +29,15 @@ interface OrdersResponse {
   totalToday: number;
 }
 
-export const useWebSocket = (url: string) => {
-  const [data, setData] = useState(null);
-
-  useEffect(() => {
-    const socket = new WebSocket("norma.nomoreparties.space/orders");
-
-    socket.onopen = () => {
-      console.log("WebSocket подключен");
-    };
-
-    socket.onmessage = (event) => {
-      setData(JSON.parse(event.data));
-    };
-
-    socket.onerror = (error) => {
-      console.error("Ошибка WebSocket:", error);
-    };
-
-    return () => {
-      socket.close();
-    };
-  }, ["norma.nomoreparties.space/orders"]);
-
-  return data;
-};
-
 export const connectUserOrders = createAsyncThunk(
   "userOrders/connect",
   async (_, { dispatch, rejectWithValue }) => {
     try {
       let loadCount = 0;
-      let load = () => {
-        const accessToken =
-          localStorage.getItem("accessToken")?.replace(/^Bearer\s+/i, "") ?? "";
+      let load = async () => {
+        dispatch(userOrdersActions.connectionEstablished());
 
-        const socket = new WebSocket(
-          `wss://norma.nomoreparties.space/orders?token=${accessToken}`
-        );
-
-        socket.onopen = () => {
-          dispatch(userOrdersActions.connectionEstablished());
-        };
-
-        socket.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
-            dispatch(userOrdersActions.messageReceived(data.orders || []));
-          } catch (e) {
-            console.error("Ошибка парсинга данных", e);
-          }
-        };
-
-        socket.onerror = (error) => {
+        let data = (await fetchUserOrders().catch(() => {
           if (loadCount < 2) {
             refreshToken();
             loadCount++;
@@ -92,17 +45,9 @@ export const connectUserOrders = createAsyncThunk(
           }
 
           dispatch(userOrdersActions.connectionFailed("WebSocket error"));
-        };
+        })) as OrdersResponse;
 
-        socket.onclose = (event) => {
-          if (!event.wasClean) {
-            dispatch(
-              userOrdersActions.connectionFailed(
-                "Connection closed unexpectedly"
-              )
-            );
-          }
-        };
+        dispatch(userOrdersActions.messageReceived(data.orders || []));
       };
 
       load();
@@ -117,7 +62,6 @@ const userOrdersSlice = createSlice({
   initialState,
   reducers: {
     connectionEstablished: (state) => {
-      state.socketConnected = true;
       state.error = undefined;
     },
     messageReceived: (state, action) => {
@@ -125,12 +69,10 @@ const userOrdersSlice = createSlice({
       state.userOrdersPending = false;
     },
     connectionFailed: (state, action) => {
-      state.socketConnected = false;
       state.error = action.payload;
       state.userOrdersPending = false;
     },
     connectionClosed: (state) => {
-      state.socketConnected = false;
       state.userOrdersPending = false;
     },
   },

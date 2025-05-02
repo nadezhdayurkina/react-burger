@@ -66,10 +66,6 @@ export function Feed() {
     return <div className="text-error">Ошибка: {ordersWSStore.error}</div>;
   }
 
-  if (!ordersWSStore.socketConnected) {
-    return <div>Соединение не установлено</div>;
-  }
-
   if (ordersWSStore.orders.length === 0) {
     return <div>Пока нет заказов</div>;
   }

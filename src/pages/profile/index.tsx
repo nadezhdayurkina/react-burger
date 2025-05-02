@@ -182,10 +182,6 @@ export function Orders() {
     return <div className="text-error">Ошибка: {useUserOrders.error}</div>;
   }
 
-  if (!useUserOrders.socketConnected) {
-    return <div>Соединение не установлено</div>;
-  }
-
   if (useUserOrders.userOrders.length === 0) {
     return <div>У вас пока нет заказов</div>;
   }

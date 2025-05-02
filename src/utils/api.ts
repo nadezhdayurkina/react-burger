@@ -158,3 +158,38 @@ export async function updateInfo(userData: {
     };
   };
 }
+
+export function fetchWS(url: string) {
+  return new Promise((resolve, reject) => {
+    try {
+      const socket = new WebSocket(url);
+
+      socket.onmessage = (event) => {
+        try {
+          resolve(JSON.parse(event.data));
+        } catch (e) {
+          reject(new Error("Ошибка парсинга данных"));
+        }
+      };
+
+      socket.onerror = () => {
+        reject(new Error("WebSocket error"));
+      };
+    } catch (error) {
+      reject(new Error("Failed to connect"));
+    }
+  });
+}
+
+export async function fetchOrdersResponse() {
+  return await fetchWS(`wss://norma.nomoreparties.space/orders/all`);
+}
+
+export async function fetchUserOrders() {
+  const accessToken =
+    localStorage.getItem("accessToken")?.replace(/^Bearer\s+/i, "") ?? "";
+
+  return await fetchWS(
+    `wss://norma.nomoreparties.space/orders?token=${accessToken}`
+  );
+}
