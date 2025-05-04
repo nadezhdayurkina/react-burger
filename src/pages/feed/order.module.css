@@ -1,0 +1,40 @@
+.order {
+    background-color: #1C1C21;
+    width: 584px;
+    border-radius: 25px;
+    cursor: pointer;
+    color: white;
+}
+
+.orderHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bottom {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.images {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    margin-left: 24px;
+}
+
+.priceAll {
+    display: flex;
+    align-items: center;
+}
+
+.date {
+    color: #8585AD;
+}
+
+.status {
+    color: #00CCCC;
+}

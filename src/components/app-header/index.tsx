@@ -23,7 +23,7 @@ export function AppHeader() {
 
       <nav className={styles.feed}>
         <NavLink
-          to="/order-feed"
+          to="/feed"
           className={({ isActive }) => (isActive ? "active" : "")}
         >
           {({ isActive }) => (

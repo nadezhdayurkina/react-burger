@@ -6,9 +6,14 @@ import {
   Input,
   PasswordInput,
 } from "@ya.praktikum/react-developer-burger-ui-components";
-import { useUserStore } from "../../store";
-import { FormEvent, useState } from "react";
+import {
+  useIngredientsStore,
+  useUserOrdersStore,
+  useUserStore,
+} from "../../store";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Order } from "../feed/order";
 
 export function Profile() {
   const userStore = useUserStore();
@@ -28,10 +33,10 @@ export function Profile() {
             Профиль
           </div>
         </NavLink>
-        <NavLink to="order-history">
+        <NavLink to="orders">
           <div
             className={
-              location.pathname === "/profile/order-history"
+              location.pathname === "/profile/orders"
                 ? "text_color_primary"
                 : "text_color_inactive"
             }
@@ -126,8 +131,76 @@ export function ProfileInfo() {
   );
 }
 
-export function OrderHistory() {
+export function Orders() {
+  let useUserOrders = useUserOrdersStore();
+  let ingredientsStore = useIngredientsStore();
+
+  useEffect(() => {
+    useUserOrders.connectUserOrders();
+
+    if (ingredientsStore.ingredients == null)
+      ingredientsStore.loadIngredients();
+  }, []);
+
+  let orders = useMemo(() => {
+    return useUserOrders.userOrders?.map((order) => {
+      if (!order) return undefined;
+
+      let countOfIngredients = order?.ingredients?.length;
+
+      let map = new Map();
+      order?.ingredients?.forEach((id) => {
+        if (!map.has(id)) map.set(id, 1);
+        else map.set(id, map.get(id) + 1);
+      });
+
+      let ingredients = [];
+      for (let id of map.keys()) {
+        ingredients.push({
+          ingredient: ingredientsStore.ingredientsById[id],
+          count: map.get(id),
+        });
+      }
+
+      return {
+        ...order,
+        ingredients,
+        price: ingredients.reduce(
+          (a, c) => a + c.count * c.ingredient.price,
+          0
+        ),
+        countOfIngredients,
+      };
+    });
+  }, [useUserOrders.userOrders, ingredientsStore.ingredients]);
+
+  if (useUserOrders.userOrdersPending) {
+    return <div>Подключаемся к серверу заказов...</div>;
+  }
+
+  if (useUserOrders.error) {
+    return <div className="text-error">Ошибка: {useUserOrders.error}</div>;
+  }
+
+  if (useUserOrders.userOrders.length === 0) {
+    return <div>У вас пока нет заказов</div>;
+  }
+
   return (
-    <div className="text_type_main-medium">Здесь будет история заказов.</div>
+    <div className={styles.feed}>
+      {orders.map((order) => (
+        <Order
+          key={order?._id}
+          number={order?.number}
+          date={order?.updatedAt}
+          name={order?.name}
+          status={order?.status}
+          ingredients={order?.ingredients}
+          countOfIngredients={order?.countOfIngredients}
+          price={order?.price}
+          path="profile/orders"
+        />
+      ))}
+    </div>
   );
 }

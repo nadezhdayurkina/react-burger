@@ -1,15 +1,13 @@
-.cardIngredient{
+.ingredientRow {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    width: 272px;
-    height: 208px;
-    color: white;
-
+    flex-direction: row;
+    width: 100%;
 }
 
-.price{
+.price {
+    margin-left: auto;
     display: flex;
     align-items: center;
 }
