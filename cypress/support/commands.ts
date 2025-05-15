@@ -1,5 +1,14 @@
 /// <reference types="cypress" />
 import "@4tw/cypress-drag-drop";
+
+Cypress.Commands.add("dragIngredient", (ingredientAlias: string) => {
+  cy.get(ingredientAlias).drag("@ingredientCardDrop");
+});
+Cypress.Commands.add("shouldExist", (...selectors) => {
+  selectors.forEach((selector) => {
+    cy.get(selector).should("exist");
+  });
+});
 // ***********************************************
 // This example commands.ts shows you how to
 // create various custom commands and overwrite

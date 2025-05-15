@@ -31,7 +31,6 @@ describe("connectUserOrders thunk", () => {
 
     await connectUserOrders()(dispatch, () => {}, { rejectWithValue });
 
-    // Проверяем, что диспатчи вызваны правильно
     expect(dispatch).toHaveBeenCalledWith(
       userOrdersActions.connectionEstablished()
     );

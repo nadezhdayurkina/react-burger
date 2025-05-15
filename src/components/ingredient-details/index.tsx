@@ -15,7 +15,7 @@ export function IngredientDetails() {
 
   return (
     <div data-cy="ingredient-details" className={styles.modal}>
-      <div className="text_type_main-large">Детали ингридиента</div>
+      <div className="text_type_main-large">Детали ингредиента</div>
       <div>
         <img
           src={currentIngredient?.image_large}
