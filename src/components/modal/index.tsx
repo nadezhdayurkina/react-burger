@@ -19,7 +19,11 @@ export function Modal(props: {
     <ModalOverlay onClose={() => props.onClose?.()}>
       <div className={styles.modalContent}>
         {props.children}
-        <div className={styles.closeIcon} onClick={() => props.onClose?.()}>
+        <div
+          data-cy="modal-close-icon"
+          className={styles.closeIcon}
+          onClick={() => props.onClose?.()}
+        >
           <CloseIcon type="primary" />
         </div>
       </div>

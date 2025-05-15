@@ -9,6 +9,7 @@ export function ModalOverlay(props: {
 
   return (
     <div
+      data-cy="modal-overlay"
       className={styles.containerModal}
       ref={rootRef}
       onClick={(e: React.MouseEvent<HTMLDivElement>) => {

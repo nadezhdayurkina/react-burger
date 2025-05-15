@@ -2,7 +2,6 @@ import { configureStore, bindActionCreators } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { ingredientsActions, ingredientsReducer } from "./slices/ingredients";
 import { userActions, userReducer } from "./slices/user";
-// import { ordersActions, ordersReducer } from "./slices/orders";
 import { userOrdersActions, userOrdersReducer } from "./slices/user-orders";
 import { ordersWSActions, ordersWSReducer } from "./slices/orders-ws";
 
@@ -10,7 +9,6 @@ export const store = configureStore({
   reducer: {
     ingredients: ingredientsReducer,
     user: userReducer,
-    // orders: ordersReducer,
     userOrders: userOrdersReducer,
     ordersWS: ordersWSReducer,
   },
@@ -34,13 +32,6 @@ export const useUserStore = () => {
     ...bindActionCreators(userActions, useDispatch()),
   };
 };
-
-// export const useOrdersStore = () => {
-//   return {
-//     ...useAppSelector((state) => state.orders),
-//     ...bindActionCreators(ordersActions, useDispatch()),
-//   };
-// };
 
 export const useUserOrdersStore = () => {
   return {

@@ -14,8 +14,8 @@ export function IngredientDetails() {
     return <div className="text_type_main-medium">Ингредиент не найден</div>;
 
   return (
-    <div className={styles.modal}>
-      <div className="text_type_main-large">Детали ингридиента</div>
+    <div data-cy="ingredient-details" className={styles.modal}>
+      <div className="text_type_main-large">Детали ингредиента</div>
       <div>
         <img
           src={currentIngredient?.image_large}

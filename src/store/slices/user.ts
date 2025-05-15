@@ -2,7 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
   auth,
   axiosInstance,
-  login,
+  sendLogin,
   updateInfo,
   userRegister,
 } from "../../utils/api";
@@ -19,7 +19,7 @@ interface InitialState {
   isAuthChecked: boolean;
 }
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   email: "",
   password: "",
   name: "",
@@ -33,31 +33,52 @@ const initialState: InitialState = {
 
 export const requestUserRegistration = createAsyncThunk(
   "user/register",
-  async ({
-    email,
-    password,
-    name,
-  }: {
-    email: string;
-    password: string;
-    name: string;
-  }) => {
-    const data = await userRegister(email, password, name);
+  async (
+    {
+      email,
+      password,
+      name,
+    }: {
+      email: string;
+      password: string;
+      name: string;
+    },
+    { rejectWithValue }
+  ) => {
+    try {
+      const data = await userRegister(email, password, name);
 
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
+      if (!data?.user?.email || !data?.user?.name || !data.accessToken) {
+        throw new Error("Invalid server response");
+      }
 
-    return data;
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+
+      return data;
+    } catch (err) {
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+
+      return rejectWithValue((err as { message: string }).message);
+    }
   }
 );
 
 export const loginUser = createAsyncThunk(
   "user/login",
   async ({ email, password }: { email: string; password: string }) => {
-    const data = await login(email, password);
+    const data = await sendLogin(email, password)
+      .then((data) => {
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
 
-    localStorage.setItem("accessToken", data.accessToken);
-    localStorage.setItem("refreshToken", data.refreshToken);
+        return data;
+      })
+      .catch(() => {
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+      });
 
     return data;
   }
@@ -97,7 +118,7 @@ export const logOut = createAsyncThunk("auth/logout", async () => {
   };
 });
 
-const userSlice = createSlice({
+export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {},
@@ -117,8 +138,8 @@ const userSlice = createSlice({
       })
 
       .addCase(loginUser.fulfilled, (state, action) => {
-        state.email = action.payload.user.email;
-        state.name = action.payload.user.name;
+        state.email = action.payload?.user?.email ?? "";
+        state.name = action.payload?.user?.name ?? "";
       })
 
       .addCase(authUser.fulfilled, (state, action) => {
@@ -138,6 +159,12 @@ const userSlice = createSlice({
       .addCase(logOut.fulfilled, (state) => {
         state.email = "";
         state.name = "";
+      })
+      .addCase(logOut.rejected, (state) => {
+        state.email = "";
+        state.name = "";
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
       });
   },
 });
