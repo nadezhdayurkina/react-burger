@@ -29,7 +29,7 @@ interface OrderDetailsResponse {
 export interface IngredientItemInConstructor extends IngredientItem {
   uniqueId: string;
 }
-interface InitialState {
+export interface InitialState {
   ingredients: IngredientItem[];
   ingredientsById: { [_id: string]: IngredientItem };
   status: "idle" | "loading" | "succeeded" | "failed";
@@ -49,7 +49,7 @@ interface InitialState {
   };
 }
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   ingredients: [],
   ingredientsById: {},
   status: "idle",
@@ -67,6 +67,10 @@ const initialState: InitialState = {
 
 export const loadIngredients = createAsyncThunk("loadIngredients", async () => {
   const { data } = await axiosInstance.get(`/api/ingredients`);
+
+  if (!data?.data) {
+    throw new Error("Invalid response structure");
+  }
   return data.data as IngredientItem[];
 });
 
@@ -108,11 +112,11 @@ export const fetchOrderByNumber = createAsyncThunk(
   }
 );
 
-const ingredientsSlice = createSlice({
+export const ingredientsSlice = createSlice({
   name: "ingredients",
   initialState,
   reducers: {
-    setBun: (state, action: PayloadAction<IngredientItemInConstructor>) => {
+    setBun: (state, action: PayloadAction<InitialState["bun"]>) => {
       state.bun = action.payload;
     },
     addFilling: (state, action: PayloadAction<IngredientItemInConstructor>) => {
@@ -133,6 +137,12 @@ const ingredientsSlice = createSlice({
         state.status = "loading";
       })
       .addCase(loadIngredients.fulfilled, (state, action) => {
+        if (!Array.isArray(action.payload)) {
+          return {
+            ...state,
+            status: "failed",
+          };
+        }
         state.status = "succeeded";
         state.ingredients = action.payload;
 

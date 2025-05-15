@@ -9,7 +9,7 @@ export interface InitialState {
   error?: string;
 }
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   ordersWSPending: undefined,
   orders: [],
   total: 0,
@@ -26,7 +26,7 @@ export interface OrderApi {
   updatedAt: string;
 }
 
-interface OrdersResponse {
+export interface OrdersResponse {
   success: boolean;
   orders: OrderApi[];
   total: number;
@@ -50,7 +50,7 @@ export const loadOrdersWS = createAsyncThunk(
   }
 );
 
-const ordersWSSlice = createSlice({
+export const ordersWSSlice = createSlice({
   name: "userOrders",
   initialState,
   reducers: {

@@ -22,6 +22,7 @@ function IngredientInTable(props: { item: IngredientItem; count?: number }) {
   return (
     <div
       ref={(node) => drag(node)}
+      data-cy="ingredient-card"
       className={styles.card}
       key={props.item._id}
       onContextMenu={(e) => {

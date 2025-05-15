@@ -95,9 +95,13 @@ export function BurgerConstructor() {
 
   return (
     <>
-      <div className={styles.burgerConstructor} ref={(node) => drop(node)}>
+      <div
+        data-cy="ingredient-card-drop"
+        className={styles.burgerConstructor}
+        ref={(node) => drop(node)}
+      >
         {ingredientsStore.bun && (
-          <div className={styles.rowTopBottom}>
+          <div data-cy="bun-top" className={styles.rowTopBottom}>
             <ConstructorElement
               type="top"
               isLocked={true}
@@ -109,7 +113,7 @@ export function BurgerConstructor() {
         )}
 
         {ingredientsStore.filling && (
-          <div className={styles.rows}>
+          <div data-cy="filling" className={styles.rows}>
             {ingredientsStore.filling.map((item, index) => (
               <Ingredient
                 key={item.uniqueId}
@@ -132,7 +136,7 @@ export function BurgerConstructor() {
         )}
 
         {ingredientsStore.bun && (
-          <div className={styles.rowTopBottom}>
+          <div data-cy="bun-bottom" className={styles.rowTopBottom}>
             <ConstructorElement
               type="bottom"
               isLocked={true}
@@ -173,7 +177,6 @@ export function BurgerConstructor() {
               <Modal
                 onClose={() => {
                   ingredientsStore.clearOrder();
-                  ingredientsStore.order = null;
                 }}
               >
                 {ingredientsStore.orderProcessing && (

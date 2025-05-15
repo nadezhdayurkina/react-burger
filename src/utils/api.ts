@@ -110,7 +110,7 @@ export async function userRegister(
   };
 }
 
-export async function login(email: string, password: string) {
+export async function sendLogin(email: string, password: string) {
   const { data } = await axiosInstance.post("/api/auth/login", {
     email,
     password,

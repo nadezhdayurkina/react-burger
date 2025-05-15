@@ -7,7 +7,7 @@ export interface InitialState {
   error?: string;
 }
 
-const initialState: InitialState = {
+export const initialState: InitialState = {
   userOrdersPending: undefined,
   userOrders: [],
 };
@@ -47,7 +47,11 @@ export const connectUserOrders = createAsyncThunk(
           dispatch(userOrdersActions.connectionFailed("WebSocket error"));
         })) as OrdersResponse;
 
-        dispatch(userOrdersActions.messageReceived(data.orders || []));
+        if (!data || !data.orders) {
+          dispatch(userOrdersActions.messageReceived([]));
+          return;
+        }
+        dispatch(userOrdersActions.messageReceived(data.orders));
       };
 
       load();
